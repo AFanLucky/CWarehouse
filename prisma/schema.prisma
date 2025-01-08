@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  name      String?
+  password  String @default("default_password_hash")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt @default(now())
+  components Component[]
+}
+
+model Component {
+  id          Int           @id @default(autoincrement())
+  title       String        @db.VarChar(255)
+  description String?
+  content     String        // 组件代码内容
+  preview     String?       // 预览图片URL
+  downloads   Int           @default(0)
+  likes       Int           @default(0)
+  published   Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // 关联关系
+  author      User          @relation(fields: [authorId], references: [id])
+  authorId    Int
+  type        ComponentType @relation(fields: [typeId], references: [id])
+  typeId      Int
+  
+  // 技术标签，用逗号分隔存储
+  tags        String?       
+  
+  // 版本号
+  version     String        @default("1.0.0")
+  
+  // 代码语言 (如: JavaScript, TypeScript, Python 等)
+  language    String        @default("JavaScript")
+  
+  // 适用平台 (如: Web, Mobile, Desktop 等，用逗号分隔)
+  platforms   String        @default("Web")
+}
+
+model ComponentType {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  components  Component[]
+}

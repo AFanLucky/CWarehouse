@@ -1,16 +1,18 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { createUser } from '@/lib/test'
+import { use } from 'react'
 
-export default async function Header({
+export default function Header({
   searchParams,
 }: {
-  searchParams?: Promise<{
+  searchParams: Promise<{
     tab?: string
   }>
 }) {
-  const params = await searchParams
-  const tabs = params?.tab
-
+  const { tab } = use(searchParams)
   return (
     <div>
       <div className="flex justify-between px-5 py-3">
@@ -19,7 +21,16 @@ export default async function Header({
           <div className="font-medium text-[20px]">组件仓</div>
         </div>
 
-        <div className="flex items-center">
+        <div
+          className="flex items-center"
+          onClick={() =>
+            createUser({
+              email: '501mosthandsome@gmail.com',
+              name: 'AFanLucky',
+              password: '123456',
+            })
+          }
+        >
           <div className="w-12 h-12 mr-3 bg-black rounded-full"></div>
           <div className="text-stone-700 text-[14px]">AFanLucky</div>
         </div>
